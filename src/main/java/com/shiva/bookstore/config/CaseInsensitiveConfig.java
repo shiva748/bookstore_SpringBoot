@@ -14,4 +14,5 @@ public class CaseInsensitiveConfig implements WebMvcConfigurer {
         matcher.setCaseSensitive(false);
         configurer.setPathMatcher(matcher);
     }
+
 }

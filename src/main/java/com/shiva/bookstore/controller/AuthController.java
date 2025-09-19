@@ -2,7 +2,7 @@ package com.shiva.bookstore.controller;
 
 import com.shiva.bookstore.dto.LoginRequest;
 import com.shiva.bookstore.dto.SimpleResponse;
-import com.shiva.bookstore.entity.User;
+import com.shiva.bookstore.entity.Users;
 import com.shiva.bookstore.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user){
+    public ResponseEntity<?> register(@RequestBody Users user){
         SimpleResponse res = authService.Register(user);
         System.out.println(res);
         return ResponseEntity.status(res.isSuccess()? HttpStatus.CREATED:HttpStatus.BAD_REQUEST).body(res);
