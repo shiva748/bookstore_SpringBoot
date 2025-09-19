@@ -4,6 +4,7 @@ import com.shiva.bookstore.dto.LoginRequest;
 import com.shiva.bookstore.dto.SimpleResponse;
 import com.shiva.bookstore.entity.Users;
 import com.shiva.bookstore.service.AuthService;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -28,8 +31,28 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        SimpleResponse res = authService.login(loginRequest);
-        System.out.println(res);
-        return ResponseEntity.ok().body(res);
+        Optional<String> res = authService.login(loginRequest);
+
+        if (res.isPresent()) {
+            String token = res.get();
+
+            // Create HttpOnly Cookie
+            Cookie cookie = new Cookie("jwt", token);
+            cookie.setHttpOnly(true);  // prevent JS access
+            cookie.setSecure(false);   // set true if using HTTPS
+            cookie.setPath("/");       // cookie available for all endpoints
+            cookie.setMaxAge(20 * 60); // 20 minutes (same as token)
+
+            // Build response with cookie
+            return ResponseEntity.ok()
+                    .header("Set-Cookie", String.format("%s=%s; Max-Age=%d; Path=%s; HttpOnly",
+                            cookie.getName(),
+                            cookie.getValue(),
+                            cookie.getMaxAge(),
+                            cookie.getPath()))
+                    .body("Login successful");
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 }

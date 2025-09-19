@@ -5,6 +5,9 @@ import com.shiva.bookstore.dto.SimpleResponse;
 import com.shiva.bookstore.entity.Users;
 import com.shiva.bookstore.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +19,17 @@ public class AuthService {
     private UserRepo userRepo;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    @Autowired
+    AuthenticationManager authenticationManager;
+    @Autowired
+    JwtService jwtService;
 
-    public SimpleResponse login(LoginRequest loginRequest) {
-        Optional<Users> user = userRepo.findByEmail(loginRequest.getEmail());
-        if (user.isPresent() && encoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
-            return new SimpleResponse(true, "Login Successful");
+    public Optional<String> login(LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        if(authentication.isAuthenticated()) {
+            return Optional.of(jwtService.generateToken(loginRequest.getEmail()));
         }else{
-            return new SimpleResponse(false, "Invalid email or password");
+            return Optional.empty();
         }
     }
 
