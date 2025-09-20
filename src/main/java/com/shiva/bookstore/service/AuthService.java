@@ -27,7 +27,8 @@ public class AuthService {
     public Optional<String> login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         if(authentication.isAuthenticated()) {
-            return Optional.of(jwtService.generateToken(loginRequest.getEmail()));
+            Optional<Users> user = userRepo.findByEmail(loginRequest.getEmail());
+            return Optional.of(jwtService.generateToken(user.get().getEmail(), user.get().getRole()));
         }else{
             return Optional.empty();
         }

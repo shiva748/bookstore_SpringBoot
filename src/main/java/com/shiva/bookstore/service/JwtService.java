@@ -22,8 +22,10 @@ public class JwtService {
     private String key;
 
     // Generate JWT
-    public String generateToken(String email) {
+    public String generateToken(String email, String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", email);
+        claims.put("role", role);
         return Jwts.builder()
                 .claims().add(claims)
                 .subject(email)
@@ -60,9 +62,8 @@ public class JwtService {
     }
 
     // Validate token
-    public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUserName(token);
-        return (username.equalsIgnoreCase(userDetails.getUsername())) && !isTokenExpired(token);
+    public boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 
     // Check expiry
@@ -72,5 +73,9 @@ public class JwtService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 }

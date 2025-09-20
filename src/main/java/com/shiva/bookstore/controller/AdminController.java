@@ -47,4 +47,3 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(true, "Books Found", books));
     }
 }
-
