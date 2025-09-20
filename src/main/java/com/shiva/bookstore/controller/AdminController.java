@@ -7,17 +7,18 @@ import com.shiva.bookstore.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+    @GetMapping
+    public ResponseEntity<SimpleResponse> getAllBooks() {
+        return ResponseEntity.status(HttpStatus.OK).body(new SimpleResponse(true, "Hello admin!"));
+    }
     @Autowired
     private BookService bookService;
 
@@ -40,4 +41,10 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SimpleResponse(false, "Book Updated Failed"));
         }
     }
+    @GetMapping("/books/search")
+    public ResponseEntity<?> searchBook(@RequestParam String title){
+        List<Books> books = bookService.findByTitle(title);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(true, "Books Found", books));
+    }
 }
+

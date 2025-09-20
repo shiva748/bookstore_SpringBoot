@@ -1,5 +1,6 @@
 package com.shiva.bookstore.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.shiva.bookstore.service.Validation;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,7 @@ public class Users {
     private String email;
 
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(nullable = false)

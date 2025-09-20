@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.awt.print.Book;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +28,20 @@ public class BookService {
             return Optional.of(bookRepo.save(books.get()));
         }else{
             return Optional.empty();
+        }
+    }
+
+    public List<Books> findByTitle(String title){
+        List<Books> books = bookRepo.findAllByTitle(title);
+        return books;
+    }
+    public List<Books> getBooks(String title){
+        if(title==null || title.isEmpty()){
+            List<Books> books = bookRepo.findAll();
+            return books;
+        }else{
+            List<Books> books = bookRepo.findAllByTitle(title);
+            return books;
         }
     }
 }

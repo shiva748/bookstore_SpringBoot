@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -41,7 +40,7 @@ public class AuthController {
             cookie.setHttpOnly(true);  // prevent JS access
             cookie.setSecure(false);   // set true if using HTTPS
             cookie.setPath("/");       // cookie available for all endpoints
-            cookie.setMaxAge(20 * 60); // 20 minutes (same as token)
+            cookie.setMaxAge(24 * 60 * 60); // 1 Day (same as token)
 
             // Build response with cookie
             return ResponseEntity.ok()
